@@ -1,4 +1,3 @@
-**#Cloudflare automatic deployment test**
 # Academy Attendance Portal — deployment guide
 
 This is a Cloudflare Pages app: static HTML/CSS/JS in `public/`, API routes in
