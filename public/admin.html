@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Admin Portal — Bible Institute</title>
+<link rel="icon" href="/assets/logo.png">
+<link rel="stylesheet" href="/css/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<header class="topbar">
+  <div class="brand">
+    <img class="brand-logo" src="/assets/logo.png" alt="Bible Institute logo">
+    <div class="brand-text">
+      <span class="brand-name-ar">معهد الكتاب</span>
+      <span class="brand-name-en" data-i18n="brand.admin">Bible Institute · Super Admin</span>
+    </div>
+  </div>
+  <div class="who">
+    <span class="who-name" data-user-name>—</span>
+    <button class="btn-lang" data-lang-btn>العربية</button>
+    <button class="btn-signout" onclick="logout()">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      <span data-i18n="common.signOut">Sign out</span>
+    </button>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Admin portal sections">
+  <button data-tab="overview" class="active">
+    <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    <span data-i18n="nav.overview">Overview</span>
+  </button>
+  <button data-tab="uploads">
+    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M5 21h14"/></svg>
+    <span data-i18n="nav.uploads">Uploads</span>
+  </button>
+  <button data-tab="features">
+    <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    <span data-i18n="nav.features">Feature Toggles</span>
+  </button>
+  <button data-tab="excuseDays">
+    <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+    <span data-i18n="nav.excuseDays">Excuse Days</span>
+  </button>
+  <button data-tab="examCover">
+    <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="6" y="9" width="12" height="7"/><path d="M6 9V4h12v5"/><path d="M6 16v4h12v-4"/></svg>
+    <span data-i18n="nav.examCover">Exam Cover</span>
+  </button>
+  <button data-tab="export">
+    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
+    <span data-i18n="nav.export">Export Tables</span>
+  </button>
+  <button data-tab="users">
+    <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 20c0-4 3-6 7-6"/><path d="M17 8l4 4m0-4l-4 4"/></svg>
+    <span data-i18n="nav.users">Disable Users</span>
+  </button>
+</nav>
+
+<main class="wrap" id="main">
+
+  <!-- OVERVIEW -->
+  <div data-panel="overview" class="card" tabindex="-1">
+    <div class="card-head"><h2 data-i18n="admin.fullAccess">Full Access</h2></div>
+    <p class="hint" data-i18n="admin.fullAccessHint">As Super Admin you can also open any other role's screens directly:</p>
+    <div class="flex flex-wrap gap-10">
+      <a class="btn ghost" href="/student.html">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>
+        <span data-i18n="admin.studentView">Student view</span>
+      </a>
+      <a class="btn ghost" href="/dean.html">
+        <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        <span data-i18n="admin.deanView">Dean view</span>
+      </a>
+      <a class="btn ghost" href="/support.html">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h13"/></svg>
+        <span data-i18n="admin.supportView">Support view</span>
+      </a>
+      <a class="btn ghost" href="/attendance-control.html">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+        <span data-i18n="admin.attControlView">Attendance Control view</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- UPLOADS -->
+  <div data-panel="uploads" class="card hidden" tabindex="-1">
+    <div class="card-head"><h2 data-i18n="admin.bulkUpload">Bulk Upload (Excel)</h2></div>
+    <div id="uploadMsg" class="msg hidden" role="alert"></div>
+
+    <div class="subcard">
+      <h3 data-i18n="admin.usersSheet">Users sheet</h3>
+      <p class="hint" data-i18n="admin.usersSheetCols">Columns: user_id, role, full_name</p>
+      <div class="input-row">
+        <input type="file" id="usersFile" accept=".xlsx,.xls,.csv">
+        <button class="btn small ghost" onclick="uploadSheet('usersFile','upload-users')"><span data-i18n="admin.uploadUsers">Upload users</span></button>
+      </div>
+    </div>
+
+    <div class="subcard">
+      <h3 data-i18n="admin.studentsSheet">Students sheet</h3>
+      <p class="hint" data-i18n="admin.studentsSheetCols">Columns: user_id, student_code, full_name, email, phone, level, program</p>
+      <div class="input-row">
+        <input type="file" id="studentsFile" accept=".xlsx,.xls,.csv">
+        <button class="btn small ghost" onclick="uploadSheet('studentsFile','upload-students')"><span data-i18n="admin.uploadStudents">Upload students</span></button>
+      </div>
+    </div>
+
+    <div class="subcard" style="margin-bottom:0;">
+      <h3 data-i18n="admin.degreesSheet">Course degrees sheet</h3>
+      <p class="hint" data-i18n="admin.degreesSheetCols">Columns: student, course_code, degree</p>
+      <div class="input-row">
+        <input type="file" id="degreesFile" accept=".xlsx,.xls,.csv">
+        <button class="btn small ghost" onclick="uploadSheet('degreesFile','upload-degrees')"><span data-i18n="admin.uploadDegrees">Upload degrees</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <div data-panel="features" class="card hidden" tabindex="-1">
+    <div class="card-head"><h2 data-i18n="admin.featureToggles">Feature Toggles</h2></div>
+    <p class="hint" data-i18n="admin.disableFeatureHint">Disable any feature system-wide.</p>
+    <div id="featuresBox" data-i18n="common.loading">Loading…</div>
+  </div>
+
+  <!-- EXCUSE DAYS -->
+  <div data-panel="excuseDays" class="card hidden" tabindex="-1">
+    <div class="card-head"><h2 data-i18n="admin.excuseDays">Excuse Days</h2></div>
+    <div class="input-row">
+      <div class="field" style="margin-bottom:0;">
+        <label for="newDay" class="sr-only">New excuse day</label>
+        <input type="date" id="newDay">
+      </div>
+      <button class="btn primary" id="addDayBtn">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+        <span data-i18n="admin.addDay">Add day</span>
+      </button>
+    </div>
+    <div class="table-scroll mt-24">
+      <table class="stack">
+        <thead><tr><th data-i18n="common.date">Date</th><th data-i18n="admin.available">Available</th><th></th></tr></thead>
+        <tbody id="daysBody"><tr><td colspan="3" data-i18n="common.loading">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- EXAM COVER -->
+  <div data-panel="examCover" class="card hidden" tabindex="-1">
+    <div class="card-head"><h2 data-i18n="admin.generateCover">Generate Exam Cover</h2></div>
+    <div class="grid cols-2">
+      <div class="field"><label for="ec_course" data-i18n="admin.courseCode">Course code</label><input id="ec_course"></div>
+      <div class="field"><label for="ec_date" data-i18n="admin.examDate">Exam date</label><input type="date" id="ec_date"></div>
+      <div class="field"><label for="ec_duration" data-i18n="admin.durationMin">Duration (minutes)</label><input type="number" id="ec_duration"></div>
+      <div class="field"><label for="ec_instructions" data-i18n="admin.instructions">Instructions</label><input id="ec_instructions"></div>
+    </div>
+    <button class="btn primary" id="genCoverBtn">
+      <svg class="icon" viewBox="0 0 24 24"><rect x="6" y="9" width="12" height="7"/><path d="M6 9V4h12v5"/><path d="M6 16v4h12v-4"/></svg>
+      <span data-i18n="admin.generate">Generate</span>
+    </button>
+    <div id="coverOutput" class="mt-24"></div>
+  </div>
+
+  <!-- EXPORT -->
+  <div data-panel="export" class="card hidden" tabindex="-1">
+    <div class="card-head"><h2 data-i18n="admin.downloadTables">Download Tables as Excel</h2></div>
+    <div class="flex flex-wrap gap-10">
+      <button class="btn small ghost" onclick="exportTable('users')"><span data-i18n="admin.tblUsers">Users</span></button>
+      <button class="btn small ghost" onclick="exportTable('students')"><span data-i18n="admin.tblStudents">Students</span></button>
+      <button class="btn small ghost" onclick="exportTable('courses')"><span data-i18n="admin.tblCourses">Courses</span></button>
+      <button class="btn small ghost" onclick="exportTable('lectures')"><span data-i18n="admin.tblLectures">Lectures</span></button>
+      <button class="btn small ghost" onclick="exportTable('attendance')"><span data-i18n="admin.tblAttendance">Attendance</span></button>
+      <button class="btn small ghost" onclick="exportTable('excuses')"><span data-i18n="admin.tblExcuses">Excuses</span></button>
+      <button class="btn small ghost" onclick="exportTable('degrees')"><span data-i18n="admin.tblDegrees">Course Degrees</span></button>
+    </div>
+  </div>
+
+  <!-- DISABLE USERS -->
+  <div data-panel="users" class="card hidden" tabindex="-1">
+    <div class="card-head"><h2 data-i18n="admin.disableEnableUser">Disable / Enable a User</h2></div>
+    <div class="input-row">
+      <div class="field" style="margin-bottom:0;">
+        <label for="disableUserId" class="sr-only" data-i18n="admin.userIdPh">User ID</label>
+        <input id="disableUserId" placeholder="User ID" data-i18n-ph="admin.userIdPh">
+      </div>
+      <button class="btn danger small" onclick="setUserActive(false)"><span data-i18n="admin.disable">Disable</span></button>
+      <button class="btn small ghost" onclick="setUserActive(true)"><span data-i18n="admin.enable">Enable</span></button>
+    </div>
+  </div>
+
+</main>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/app.js"></script>
+<script>
+function readSheet(fileInputId) {
+  return new Promise((resolve, reject) => {
+    const input = document.getElementById(fileInputId);
+    if (!input.files.length) return reject(new Error(t("admin.chooseFileFirst")));
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const wb = XLSX.read(e.target.result, { type: "array" });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      resolve(XLSX.utils.sheet_to_json(sheet, { defval: "" }));
+    };
+    reader.onerror = () => reject(new Error(t("admin.couldNotReadFile")));
+    reader.readAsArrayBuffer(input.files[0]);
+  });
+}
+
+async function uploadSheet(fileInputId, action) {
+  const msg = document.getElementById("uploadMsg");
+  msg.classList.add("hidden");
+  try {
+    const rows = await readSheet(fileInputId);
+    const res = await api("/api/admin", { method: "POST", body: { action, rows } });
+    const errCount = res.errors ? res.errors.length : 0;
+    showMsg(msg, t("admin.rowsInserted", { n: res.inserted }) + (errCount ? t("admin.rowsHadErrors", { n: errCount }) : ""), errCount ? "error" : "success");
+    if (errCount) console.warn(res.errors);
+  } catch (e) { showMsg(msg, e.message); }
+}
+
+async function loadFeatures() {
+  const { features } = await api("/api/admin?action=features");
+  document.getElementById("featuresBox").innerHTML = features.map(f => `
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--border);">
+      <span style="font-weight:600;">${f.feature_key}</span>
+      <label class="checkbox-row"><input type="checkbox" ${f.enabled ? "checked" : ""} onchange="toggleFeature('${f.feature_key}', this.checked)"> ${t("admin.enabled")}</label>
+    </div>`).join("");
+}
+async function toggleFeature(key, enabled) {
+  await api("/api/admin", { method: "POST", body: { action: "feature-toggle", feature_key: key, enabled } });
+}
+
+async function loadDays() {
+  const { days } = await api("/api/admin?action=excuse-days");
+  document.getElementById("daysBody").innerHTML = days.length ? days.map(d => `
+    <tr><td data-label="${t("common.date")}">${d.day_date}</td>
+        <td data-label="${t("admin.available")}"><label class="checkbox-row"><input type="checkbox" ${d.is_active ? "checked" : ""} onchange="toggleDay(${d.id}, this.checked)"> ${t("admin.available")}</label></td>
+        <td data-label=""></td></tr>`).join("") : `<tr><td colspan="3">${emptyState(t("admin.noExcuseDaysYet"))}</td></tr>`;
+}
+async function addDay() {
+  const day = document.getElementById("newDay").value;
+  if (!day) return;
+  await api("/api/admin", { method: "POST", body: { action: "excuse-day-add", day_date: day } });
+  loadDays();
+}
+async function toggleDay(id, is_active) {
+  await api("/api/admin", { method: "POST", body: { action: "excuse-day-toggle", id, is_active } });
+}
+
+async function generateCover() {
+  const body = {
+    action: "exam-cover",
+    course_code: document.getElementById("ec_course").value.trim(),
+    exam_date: document.getElementById("ec_date").value,
+    duration_minutes: Number(document.getElementById("ec_duration").value) || null,
+    instructions: document.getElementById("ec_instructions").value,
+  };
+  try {
+    const { cover } = await api("/api/admin", { method: "POST", body });
+    document.getElementById("coverOutput").innerHTML = `
+      <div class="card" id="printableCover">
+        <h2 style="text-align:center;">${cover.course_name} — ${t("admin.examCoverTitle")}</h2>
+        <p style="text-align:center;color:var(--muted);">${t("admin.code")}: ${cover.course_code} · ${t("admin.teacher")}: ${cover.teacher_name || "—"}</p>
+        <p style="text-align:center;">${t("common.date")}: ${cover.exam_date} · ${t("admin.duration")}: ${cover.duration_minutes || "—"} ${t("admin.min")}</p>
+        <p>${cover.instructions || ""}</p>
+        <div class="table-scroll">
+        <table><thead><tr><th>#</th><th>${t("admin.studentCode")}</th><th>${t("admin.fullName")}</th><th>${t("admin.signature")}</th></tr></thead>
+          <tbody>${cover.students.map((s, i) => `<tr><td>${i + 1}</td><td>${s.student_code}</td><td>${s.full_name}</td><td></td></tr>`).join("")}</tbody>
+        </table>
+        </div>
+      </div>
+      <button class="btn small ghost" onclick="window.print()">
+        <svg class="icon" viewBox="0 0 24 24"><rect x="6" y="9" width="12" height="7"/><path d="M6 9V4h12v5"/><path d="M6 16v4h12v-4"/></svg>
+        ${t("admin.print")}
+      </button>`;
+  } catch (e) { alert(e.message); }
+}
+
+async function exportTable(table) {
+  const { rows } = await api(`/api/admin?action=export&table=${table}`);
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, table);
+  XLSX.writeFile(wb, `${table}.xlsx`);
+}
+
+async function setUserActive(active) {
+  const id = document.getElementById("disableUserId").value.trim();
+  if (!id) return;
+  await api("/api/admin", { method: "POST", body: { action: "disable-user", user_id: id, is_active: active } });
+  alert(active ? t("admin.userEnabled", { id }) : t("admin.userDisabled", { id }));
+}
+
+(async function init() {
+  const user = await guard(["super_admin"]);
+  if (!user) return;
+  initTabs();
+  document.getElementById("addDayBtn").addEventListener("click", addDay);
+  document.getElementById("genCoverBtn").addEventListener("click", generateCover);
+  document.addEventListener("langchange", () => { loadFeatures(); loadDays(); });
+  await Promise.all([loadFeatures(), loadDays()]);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+name = "attendance-portal"
+compatibility_date = "2026-07-01"
+pages_build_output_dir = "public"
+
+# --- D1 database binding ---
+# Create with: wrangler d1 create attendance-portal-db
+# Then paste the returned database_id below.
+[[d1_databases]]
+binding = "DB"
+database_name = "attendance-portal-db"
+database_id = "6065efab-32c4-44c6-89ea-b026eaed6da2"
+
+# --- Environment variables ---
+[vars]
+# Static lecture location, decimal degrees — St. Mary Church, Kasreyet El-Rehan
+SITE_LAT = "30.007038"
+SITE_LNG = "31.231652"
+# 25m tolerance to absorb normal phone GPS drift (typically 5-20m,
+# more indoors/near buildings) while still rejecting genuinely off-site check-ins
+MAX_DISTANCE_M = "25"
+
+# Set this as a secret, NOT here, before deploying:
+#   wrangler pages secret put SESSION_SECRET
+# It signs the login session cookie. Use a long random string.

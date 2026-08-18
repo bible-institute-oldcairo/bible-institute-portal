@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Portal — Bible Institute</title>
+<link rel="icon" href="/assets/logo.png">
+<link rel="stylesheet" href="/css/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<header class="topbar">
+  <div class="brand">
+    <img class="brand-logo" src="/assets/logo.png" alt="Bible Institute logo">
+    <div class="brand-text">
+      <span class="brand-name-ar">معهد الكتاب</span>
+      <span class="brand-name-en" data-i18n="brand.student">Bible Institute · Student</span>
+    </div>
+  </div>
+  <div class="who">
+    <span class="who-name" data-user-name>—</span>
+    <button class="btn-lang" data-lang-btn>العربية</button>
+    <button class="btn-signout" onclick="logout()">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      <span data-i18n="common.signOut">Sign out</span>
+    </button>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Student portal sections">
+  <button data-tab="profile" class="active">
+    <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>
+    <span data-i18n="nav.profile">Profile</span>
+  </button>
+  <button data-tab="courses">
+    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h13"/></svg>
+    <span data-i18n="nav.courses">Courses</span>
+  </button>
+  <button data-tab="attendance">
+    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 22s7-7.58 7-12a7 7 0 1 0-14 0c0 4.42 7 12 7 12z"/><circle cx="12" cy="10" r="3"/></svg>
+    <span data-i18n="nav.attendance">Attendance</span>
+  </button>
+  <button data-tab="excuses">
+    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg>
+    <span data-i18n="nav.excuses">Excuses</span>
+  </button>
+  <button data-tab="card">
+    <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M14 10h6M14 14h4"/></svg>
+    <span data-i18n="nav.card">Card</span>
+  </button>
+</nav>
+
+<main class="wrap" id="main">
+
+  <!-- PROFILE -->
+  <div data-panel="profile" class="card" tabindex="-1">
+    <div class="card-head">
+      <h2>
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>
+        <span data-i18n="student.myProfile">My Profile</span>
+      </h2>
+    </div>
+    <div id="profileBox" data-i18n="common.loading">Loading…</div>
+  </div>
+
+  <!-- SIGN-IN SECURITY (biometric login) -->
+  <div class="card" id="webauthnCard">
+    <div class="card-head">
+      <h2>
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-9 9v3"/><path d="M12 3a9 9 0 0 1 9 9v3"/><path d="M12 8a4 4 0 0 0-4 4v5"/><path d="M12 8a4 4 0 0 1 4 4v2"/><path d="M12 12v6"/></svg>
+        <span data-i18n="security.title">Sign-in Security</span>
+      </h2>
+    </div>
+    <p class="hint" data-i18n="security.desc">Add Face ID, Fingerprint, or Windows Hello on this device to sign in without typing your ID next time.</p>
+    <div id="webauthnMsg" class="msg hidden"></div>
+    <div id="webauthnList"></div>
+    <button class="btn" id="webauthnAddBtn" data-i18n="security.add">+ Add this device</button>
+  </div>
+
+  <!-- COURSES -->
+  <div data-panel="courses" class="card hidden" tabindex="-1">
+    <div class="card-head">
+      <h2>
+        <svg class="icon" viewBox="0 0 24 24"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h13"/></svg>
+        <span data-i18n="student.myCourses">My Courses</span>
+      </h2>
+    </div>
+    <div id="coursesBox" data-i18n="common.loading">Loading…</div>
+  </div>
+
+  <!-- ATTENDANCE -->
+  <div data-panel="attendance" class="card hidden" tabindex="-1">
+    <div class="card-head">
+      <h2>
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 22s7-7.58 7-12a7 7 0 1 0-14 0c0 4.42 7 12 7 12z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span data-i18n="student.attendance">Attendance</span>
+      </h2>
+    </div>
+    <div id="attMsg" class="msg hidden" role="alert"></div>
+    <button class="btn primary" id="checkinBtn">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+      <span data-i18n="student.checkInOut">Check in / out now</span>
+    </button>
+    <div class="geo-status" id="geoStatus" aria-live="polite"></div>
+
+    <hr class="sep">
+    <h3 data-i18n="student.dailySummary">Daily summary</h3>
+    <div class="table-scroll">
+      <table class="stack"><thead><tr><th data-i18n="common.date">Date</th><th data-i18n="student.firstCheckIn">First check-in</th><th data-i18n="student.lastCheckOut">Last check-out</th><th data-i18n="student.events">Events</th></tr></thead>
+        <tbody id="summaryBody"><tr><td colspan="4" data-i18n="common.loading">Loading…</td></tr></tbody></table>
+    </div>
+  </div>
+
+  <!-- EXCUSES -->
+  <div data-panel="excuses" class="card hidden" tabindex="-1">
+    <div class="card-head">
+      <h2>
+        <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg>
+        <span data-i18n="student.addExcuse">Add Excuse</span>
+      </h2>
+    </div>
+    <div id="excuseMsg" class="msg hidden" role="alert"></div>
+    <div class="grid cols-2">
+      <div class="field">
+        <label for="dayPick" data-i18n="student.day">Day</label>
+        <select id="dayPick"></select>
+      </div>
+      <div class="field">
+        <label for="lecturePick" data-i18n="student.lecturePick">Lecture</label>
+        <select id="lecturePick">
+          <option value="first" data-i18n="common.first">First</option>
+          <option value="second" data-i18n="common.second">Second</option>
+          <option value="both" data-i18n="common.both">Both</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label for="excuseText" data-i18n="student.excuseText">Excuse text</label>
+      <textarea id="excuseText" rows="3" placeholder="Explain the reason for your absence…" data-i18n-ph="student.excuseTextPh"></textarea>
+    </div>
+    <div class="field">
+      <label for="excuseFile" data-i18n="student.attachmentLink">Attachment link (optional)</label>
+      <input id="excuseFile" placeholder="https://…">
+      <div class="help" data-i18n="student.attachmentHelp">Paste a link to a Drive, Dropbox, or similar shared file.</div>
+    </div>
+    <button class="btn primary" id="submitExcuseBtn">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>
+      <span data-i18n="student.submitExcuse">Submit excuse</span>
+    </button>
+
+    <hr class="sep">
+    <h3 data-i18n="student.myExcuses">My excuses</h3>
+    <div class="table-scroll">
+      <table class="stack"><thead><tr><th data-i18n="student.day">Day</th><th data-i18n="student.filed">Filed</th><th data-i18n="student.lecturePick">Lecture</th><th data-i18n="student.text">Text</th><th data-i18n="common.status">Status</th><th></th></tr></thead>
+        <tbody id="excusesBody"><tr><td colspan="6" data-i18n="common.loading">Loading…</td></tr></tbody></table>
+    </div>
+  </div>
+
+  <!-- CARD -->
+  <div data-panel="card" class="card hidden" tabindex="-1">
+    <div class="card-head">
+      <h2>
+        <svg class="icon" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M14 10h6M14 14h4"/></svg>
+        <span data-i18n="student.myCard">My Card</span>
+      </h2>
+    </div>
+    <div id="cardMsg" class="msg hidden" role="alert"></div>
+    <div id="cardWrap" style="display:flex; justify-content:center;">
+      <div id="cardBox" data-i18n="common.loading">Loading…</div>
+    </div>
+    <div style="text-align:center; margin-top:20px;">
+      <button class="btn primary" id="downloadCardBtn" style="display:none;">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
+        <span data-i18n="student.downloadCard">Download as image</span>
+      </button>
+    </div>
+    <p class="hint" style="text-align:center; margin-top:12px;" data-i18n="student.cardHint">Show this QR code to Attendance Control to log your attendance without typing your code.</p>
+  </div>
+
+
+</main>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/app.js"></script>
+<script>
+let ME = null;
+// Academic year shown on the student card. Update this each year — a future
+// improvement would move this into feature_flags / an admin setting.
+const ACADEMIC_YEAR = "2026/2027";
+
+async function loadProfile() {
+  const { profile } = await api("/api/students?action=me");
+  document.getElementById("profileBox").innerHTML = `
+    <div class="grid cols-2">
+      <div class="data-row"><label>${t("student.fullName")}</label><div class="value">${profile.full_name}</div></div>
+      <div class="data-row"><label>${t("student.studentCode")}</label><div class="value">${profile.user_id}</div></div>
+      <div class="data-row"><label>${t("student.email")}</label><div class="value">${profile.email || "—"}</div></div>
+      <div class="data-row"><label>${t("student.phone")}</label><div class="value">${profile.phone || "—"}</div></div>
+      <div class="data-row"><label>${t("student.level")}</label><div class="value">${profile.level || "—"}</div></div>
+      <div class="data-row"><label>${t("student.program")}</label><div class="value">${profile.program || "—"}</div></div>
+    </div>`;
+}
+
+async function loadCourses() {
+  const { courses } = await api("/api/courses?action=list");
+  const box = document.getElementById("coursesBox");
+  if (!courses.length) { box.innerHTML = emptyState(t("student.notRegistered")); return; }
+  box.innerHTML = courses.map((c, idx) => {
+    const hasNotes = (c.lectures || []).some(l => l.notes);
+    return `
+    <div class="subcard ${idx % 2 === 1 ? 'subcard-alt' : ''}">
+      <div style="display:flex; gap:14px; align-items:center; justify-content:space-between;">
+        <div style="display:flex; gap:14px; align-items:center;">
+          ${c.banner_url ? `<img src="${c.banner_url}" alt="" style="width:90px;height:60px;object-fit:cover;border-radius:10px;">` : ""}
+          <div><strong>${c.name}</strong><br><span class="text-muted" style="font-size:0.9rem;">${c.teacher_name || ""} · ${c.course_code}</span></div>
+        </div>
+        <button type="button" class="icon-btn" aria-expanded="false" aria-label="${t('student.toggleCourse')}"
+          onclick="toggleSection(this, 'courseBody-${c.course_code}')">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+      </div>
+      <div class="table-scroll mt-24 hidden" id="courseBody-${c.course_code}">
+      <table class="stack"><thead><tr><th>${t("student.lecture")}</th><th>${t("common.date")}</th><th>${t("student.links")}</th>${hasNotes ? `<th>${t("student.notes")}</th>` : ""}</tr></thead>
+        <tbody>
+          ${(c.lectures || []).map(l => `
+            <tr>
+              <td data-label="${t("student.lecture")}">
+                <div class="lecture-name-cell">
+                  <button type="button" class="icon-btn" aria-expanded="false" aria-label="${t('student.toggleLecture')}"
+                    onclick="toggleSection(this, 'lecLinks-${l.lecture_id}', 'lecNotes-${l.lecture_id}')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                  </button>
+                  <span>${l.name}</span>
+                </div>
+              </td>
+              <td data-label="${t("common.date")}">${l.lecture_date || "—"}</td>
+              <td data-label="${t("student.links")}" class="multiline hidden" id="lecLinks-${l.lecture_id}">${formatLinks(l.links)}</td>
+              ${hasNotes ? `<td data-label="${t("student.notes")}" class="multiline hidden" id="lecNotes-${l.lecture_id}">${l.notes || ""}</td>` : ""}
+            </tr>`).join("")}
+        </tbody>
+      </table>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+// Generic expand/collapse: toggles aria-expanded on the button (CSS rotates the
+// chevron off that attribute) and the `hidden` class on 1-2 target elements.
+function toggleSection(btn, ...targetIds) {
+  const expanded = btn.getAttribute("aria-expanded") === "true";
+  btn.setAttribute("aria-expanded", String(!expanded));
+  targetIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle("hidden", expanded);
+  });
+}
+
+function formatLinks(links) {
+  if (!links) return "—";
+  const lines = links.split("\n").map(u => u.trim()).filter(Boolean);
+  if (!lines.length) return "—";
+  return lines.map((line, i) => {
+    const idx = line.indexOf("::");
+    const label = idx >= 0 ? line.slice(0, idx).trim() : `${t("student.openLink")} ${i + 1}`;
+    const url = idx >= 0 ? line.slice(idx + 2).trim() : line;
+    return `<a href="${url}" target="_blank" rel="noopener">${i + 1}. ${label}</a>`;
+  }).join("<br>");
+}
+
+async function loadAttendance() {
+  const { summary } = await api("/api/attendance?action=mine");
+  document.getElementById("summaryBody").innerHTML = summary.length
+    ? summary.map(s => `<tr><td data-label="${t("common.date")}">${s.event_date}</td><td data-label="${t("student.firstCheckIn")}">${fmtDateTime(s.first_check_in)}</td><td data-label="${t("student.lastCheckOut")}">${fmtDateTime(s.last_check_out)}</td><td data-label="${t("student.events")}">${s.events_count}</td></tr>`).join("")
+    : `<tr><td colspan="4">${emptyState(t("student.noAttendance"))}</td></tr>`;
+}
+
+function checkIn() {
+  const statusEl = document.getElementById("geoStatus");
+  const msgEl = document.getElementById("attMsg");
+  const btn = document.getElementById("checkinBtn");
+  msgEl.classList.add("hidden");
+  if (!navigator.geolocation) { showMsg(msgEl, t("student.geoUnsupported")); return; }
+  btn.disabled = true;
+  statusEl.textContent = t("student.locating");
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const { latitude, longitude } = pos.coords;
+    try {
+      const device_info = JSON.stringify(await collectDeviceInfo());
+      const res = await api("/api/attendance", { method: "POST", body: { action: "checkin", lat: latitude, lng: longitude, device_info } });
+      statusEl.textContent = t("student.distanceFrom", { n: res.distance_m });
+      showMsg(msgEl, t("student.attendanceRecorded"), "success");
+      loadAttendance();
+    } catch (e) {
+      statusEl.textContent = "";
+      if (e.data && e.data.distance_m != null) {
+        showMsg(msgEl, t("student.awayBy", { n: Math.round(e.data.distance_m) }));
+      } else {
+        showMsg(msgEl, e.message);
+      }
+    } finally {
+      btn.disabled = false;
+    }
+  }, () => {
+    statusEl.textContent = "";
+    showMsg(msgEl, t("student.geoDenied"));
+    btn.disabled = false;
+  }, { enableHighAccuracy: true, timeout: 10000 });
+}
+
+async function loadExcuseDays() {
+  const { days } = await api("/api/excuses?action=days");
+  document.getElementById("dayPick").innerHTML = days.length
+    ? days.map(d => `<option value="${d.id}">${d.day_date}</option>`).join("")
+    : `<option value="">${t("student.noDaysAvailable")}</option>`;
+}
+
+async function loadMyExcuses() {
+  const { excuses } = await api("/api/excuses?action=mine");
+  const body = document.getElementById("excusesBody");
+  body.innerHTML = excuses.length ? excuses.map(e => `
+    <tr>
+      <td data-label="${t("student.day")}">${e.day_date}</td>
+      <td data-label="${t("student.filed")}">${fmtDateTime(e.created_at)}</td>
+      <td data-label="${t("student.lecturePick")}">${e.lecture_choice}</td>
+      <td data-label="${t("student.text")}" style="max-width:260px;">${e.excuse_text}</td>
+      <td data-label="${t("common.status")}"><span class="pill ${e.status === 'canceled' ? 'muted' : 'ok'}">${t("common." + e.status) !== "common." + e.status ? t("common." + e.status) : e.status}</span></td>
+      <td data-label="">${e.status !== 'canceled' ? `<button class="btn small ghost" onclick="cancelExcuse(${e.id})">${t("student.cancel")}</button>` : ""}</td>
+    </tr>`).join("") : `<tr><td colspan="6">${emptyState(t("student.noExcuses"))}</td></tr>`;
+}
+
+async function cancelExcuse(id) {
+  if (!confirm(t("student.cancelConfirm"))) return;
+  await api("/api/excuses", { method: "POST", body: { action: "cancel", excuse_id: id } });
+  loadMyExcuses();
+}
+
+async function submitExcuse() {
+  const msgEl = document.getElementById("excuseMsg");
+  msgEl.classList.add("hidden");
+  const excuse_day_id = document.getElementById("dayPick").value;
+  const lecture_choice = document.getElementById("lecturePick").value;
+  const excuse_text = document.getElementById("excuseText").value.trim();
+  const fileInput = document.getElementById("excuseFile");
+  if (!excuse_day_id) { showMsg(msgEl, t("student.noExcuseDay")); return; }
+  if (!excuse_text) { showMsg(msgEl, t("student.writeExcuseText")); return; }
+
+  try {
+    let attachments = [];
+    const link = fileInput.value.trim();
+    if (link) {
+      attachments.push({ file_name: "Attachment", file_url: link });
+    }
+    await api("/api/excuses", { method: "POST", body: { action: "add", excuse_day_id, lecture_choice, excuse_text, attachments } });
+    showMsg(msgEl, t("student.excuseSubmitted"), "success");
+    document.getElementById("excuseText").value = "";
+    fileInput.value = "";
+    loadMyExcuses();
+  } catch (e) {
+    showMsg(msgEl, e.message);
+  }
+}
+
+function reloadDynamic() {
+  loadProfile(); loadCourses(); loadAttendance(); loadExcuseDays(); loadMyExcuses(); loadCard();
+}
+
+async function loadCard() {
+  const msgEl = document.getElementById("cardMsg");
+  const downloadBtn = document.getElementById("downloadCardBtn");
+  msgEl.classList.add("hidden");
+  downloadBtn.style.display = "none";
+  const box = document.getElementById("cardBox");
+  box.textContent = t("common.loading");
+  try {
+    const { card } = await api("/api/students?action=card");
+    const code = card.card_number || card.user_id;
+    box.innerHTML = `
+      <div class="card-visual-outer" id="studentCardVisual">
+        <div class="card-visual">
+          <img class="cv-logo" src="/assets/logo.png" alt="">
+          <div class="cv-name">${card.full_name}</div>
+          <div class="cv-meta">${card.program || ""}${card.level ? " · " + card.level : ""}</div>
+          <div class="cv-code">${code}</div>
+          <div class="cv-qr-wrap" id="cardQr"></div>
+          <div class="cv-year">${ACADEMIC_YEAR}</div>
+        </div>
+      </div>`;
+    new QRCode(document.getElementById("cardQr"), {
+      text: code,
+      width: 150,
+      height: 150,
+      colorDark: "#243461",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.M,
+    });
+    downloadBtn.style.display = "";
+  } catch (e) {
+    box.innerHTML = "";
+    showMsg(msgEl, e.message && e.message.toLowerCase().includes("disabled") ? t("student.cardDisabled") : t("student.cardError"));
+  }
+}
+
+async function downloadCard() {
+  const el = document.getElementById("studentCardVisual");
+  if (!el || typeof html2canvas === "undefined") return;
+  const canvas = await html2canvas(el, { backgroundColor: null, scale: 3 });
+  const link = document.createElement("a");
+  link.download = "student-card.png";
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}
+
+(async function init() {
+  const user = await guard(["student"]);
+  if (!user) return;
+  initTabs();
+  document.getElementById("checkinBtn").addEventListener("click", checkIn);
+  document.getElementById("submitExcuseBtn").addEventListener("click", submitExcuse);
+  document.getElementById("downloadCardBtn").addEventListener("click", downloadCard);
+  document.addEventListener("langchange", reloadDynamic);
+  initBiometricSettings();
+  await Promise.all([loadProfile(), loadCourses(), loadAttendance(), loadExcuseDays(), loadMyExcuses(), loadCard()]);
+})();
+</script>
+</body>
+</html>

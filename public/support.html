@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Support Portal — Bible Institute</title>
+<link rel="icon" href="/assets/logo.png">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<header class="topbar">
+  <div class="brand">
+    <img class="brand-logo" src="/assets/logo.png" alt="Bible Institute logo">
+    <div class="brand-text">
+      <span class="brand-name-ar">معهد الكتاب</span>
+      <span class="brand-name-en" data-i18n="brand.support">Bible Institute · Support</span>
+    </div>
+  </div>
+  <div class="who">
+    <span class="who-name" data-user-name>—</span>
+    <button class="btn-lang" data-lang-btn>العربية</button>
+    <button class="btn-signout" onclick="logout()">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      <span data-i18n="common.signOut">Sign out</span>
+    </button>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Support portal sections">
+  <button data-tab="new" class="active">
+    <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+    <span data-i18n="nav.addCourse">Add Course</span>
+  </button>
+  <button data-tab="manage">
+    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h13"/></svg>
+    <span data-i18n="nav.manageCourses">Manage Courses</span>
+  </button>
+</nav>
+
+<main class="wrap" id="main">
+
+  <!-- SIGN-IN SECURITY (biometric login) -->
+  <div class="card" id="webauthnCard">
+    <div class="card-head">
+      <h2>
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-9 9v3"/><path d="M12 3a9 9 0 0 1 9 9v3"/><path d="M12 8a4 4 0 0 0-4 4v5"/><path d="M12 8a4 4 0 0 1 4 4v2"/><path d="M12 12v6"/></svg>
+        <span data-i18n="security.title">Sign-in Security</span>
+      </h2>
+    </div>
+    <p class="hint" data-i18n="security.desc">Add Face ID, Fingerprint, or Windows Hello on this device to sign in without typing your ID next time.</p>
+    <div id="webauthnMsg" class="msg hidden"></div>
+    <div id="webauthnList"></div>
+    <button class="btn" id="webauthnAddBtn" data-i18n="security.add">+ Add this device</button>
+  </div>
+
+  <!-- NEW COURSE -->
+  <div data-panel="new" class="card" tabindex="-1">
+    <div class="card-head"><h2 data-i18n="support.addCourseTitle">Add a New Course</h2></div>
+    <div id="newMsg" class="msg hidden" role="alert"></div>
+    <div class="grid cols-2">
+      <div class="field"><label for="c_name" data-i18n="support.courseName">Course name</label><input id="c_name"></div>
+      <div class="field"><label for="c_teacher" data-i18n="support.teacherName">Teacher name</label><input id="c_teacher"></div>
+    </div>
+    <div class="field"><label for="c_banner" data-i18n="support.bannerUrl">Banner image URL (optional link)</label><input id="c_banner" placeholder="https://…"></div>
+    <button class="btn primary" id="createCourseBtn">
+      <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+      <span data-i18n="support.createCourse">Create course</span>
+    </button>
+  </div>
+
+  <!-- MANAGE -->
+  <div data-panel="manage" class="card hidden" tabindex="-1">
+    <div class="card-head"><h2 data-i18n="support.manageCourses">Manage Courses</h2></div>
+    <div class="field"><label for="courseSelect" data-i18n="support.selectCourse">Select course</label><select id="courseSelect"></select></div>
+    <div id="courseEdit"></div>
+
+    <h3 class="mt-24" data-i18n="support.lectures">Lectures</h3>
+    <div id="lecturesBox"></div>
+
+    <div class="subcard">
+      <h3 data-i18n="support.addLecture">Add a lecture</h3>
+      <div class="grid cols-3">
+        <div class="field"><label for="l_name" data-i18n="support.name">Name</label><input id="l_name"></div>
+        <div class="field"><label for="l_date" data-i18n="support.date">Date</label><input type="date" id="l_date"></div>
+      </div>
+      <div class="field"><label data-i18n="support.linksLabel">Links</label><div id="l_links_rows"></div></div>
+      <div class="field"><label for="l_notes" data-i18n="support.notesLabel">Note (optional)</label><input id="l_notes"></div>
+      <button class="btn primary" id="addLectureBtn">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+        <span data-i18n="support.addLecture">Add lecture</span>
+      </button>
+    </div>
+  </div>
+
+</main>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/app.js"></script>
+<script>
+let COURSES = [];
+
+async function createCourse() {
+  const msg = document.getElementById("newMsg");
+  msg.classList.add("hidden");
+  const name = document.getElementById("c_name").value.trim();
+  const teacher_name = document.getElementById("c_teacher").value.trim();
+  const bannerInput = document.getElementById("c_banner");
+  if (!name) { showMsg(msg, t("support.courseNameRequired")); return; }
+  try {
+    const banner_url = bannerInput.value.trim() || null;
+    const res = await api("/api/courses", { method: "POST", body: { action: "add", name, teacher_name, banner_url } });
+    showMsg(msg, t("support.courseCreated", { code: res.course_code }), "success");
+    document.getElementById("c_name").value = "";
+    document.getElementById("c_teacher").value = "";
+    bannerInput.value = "";
+    loadCourses();
+  } catch (e) { showMsg(msg, e.message); }
+}
+
+async function loadCourses() {
+  const { courses } = await api("/api/courses?action=all");
+  COURSES = courses;
+  const sel = document.getElementById("courseSelect");
+  sel.innerHTML = courses.map(c => `<option value="${c.course_code}">${c.name} (${c.course_code})</option>`).join("")
+    || `<option value="">${t("support.noCoursesYet")}</option>`;
+  if (courses.length) renderCourseEdit(courses[0]);
+}
+
+function renderCourseEdit(c) {
+  document.getElementById("courseEdit").innerHTML = `
+    <div class="grid cols-2 mt-24">
+      <div class="field"><label for="e_name">${t("support.name")}</label><input id="e_name" value="${c.name}"></div>
+      <div class="field"><label for="e_teacher">${t("support.teacherName")}</label><input id="e_teacher" value="${c.teacher_name || ''}"></div>
+    </div>
+    <label class="checkbox-row"><input type="checkbox" id="e_active" ${c.is_active ? "checked" : ""}> ${t("support.active")}</label>
+    <div class="mt-24"><button class="btn small ghost" onclick="saveCourse('${c.course_code}')">${t("common.save")}</button></div>`;
+}
+
+async function saveCourse(code) {
+  await api("/api/courses", { method: "POST", body: {
+    action: "update", course_code: code,
+    name: document.getElementById("e_name").value,
+    teacher_name: document.getElementById("e_teacher").value,
+    is_active: document.getElementById("e_active").checked,
+  }});
+  loadCourses();
+}
+
+async function loadLectures(code) {
+  const { lectures } = await api(`/api/courses?action=lectures&course_code=${encodeURIComponent(code)}`);
+  document.getElementById("lecturesBox").innerHTML = lectures.length ? lectures.map(l => `
+    <div class="subcard">
+      <div class="grid cols-2">
+        <div class="field"><label for="ln_${l.lecture_id}">${t("support.name")}</label><input id="ln_${l.lecture_id}" value="${l.name}"></div>
+        <div class="field"><label for="ld_${l.lecture_id}">${t("support.date")}</label><input type="date" id="ld_${l.lecture_id}" value="${l.lecture_date || ''}"></div>
+      </div>
+      <div class="field"><label>${t("support.linksLabel")}</label><div id="ll_${l.lecture_id}_rows"></div></div>
+      <div class="field"><label for="lnt_${l.lecture_id}">${t("support.notesLabel")}</label><input id="lnt_${l.lecture_id}" value="${l.notes || ''}"></div>
+      <button class="btn small ghost" onclick="saveLecture(${l.lecture_id})">${t("support.saveLecture")}</button>
+    </div>`).join("") : `<div class="empty-state"><p>${t("support.noLecturesYet")}</p></div>`;
+
+  LINK_STATE = { new: [] };
+  renderLinkRows("l_links_rows", "new");
+  for (const l of lectures) {
+    LINK_STATE[l.lecture_id] = stringToLinks(l.links);
+    renderLinkRows(`ll_${l.lecture_id}_rows`, l.lecture_id);
+  }
+}
+
+// --- Link row editor: each lecture's links are edited as name/url pairs,
+// stored internally as [{name,url}], serialized as "name::url" lines for the API.
+let LINK_STATE = { new: [] };
+
+function stringToLinks(str) {
+  if (!str) return [];
+  return str.split("\n").map(s => s.trim()).filter(Boolean).map(line => {
+    const idx = line.indexOf("::");
+    return idx >= 0 ? { name: line.slice(0, idx).trim(), url: line.slice(idx + 2).trim() } : { name: "", url: line };
+  });
+}
+
+function linksToString(links) {
+  return links.filter(l => l.url && l.url.trim())
+    .map((l, i) => `${(l.name && l.name.trim()) || (t("support.linkDefault") + " " + (i + 1))}::${l.url.trim()}`)
+    .join("\n");
+}
+
+function renderLinkRows(containerId, key) {
+  const rows = LINK_STATE[key] || [];
+  const box = document.getElementById(containerId);
+  if (!box) return;
+  box.innerHTML = rows.map((l, i) => `
+    <div class="input-row mt-8">
+      <input placeholder="${t('support.linkNamePh')}" value="${l.name || ''}"
+        oninput="LINK_STATE['${key}'][${i}].name = this.value">
+      <input placeholder="${t('support.linkUrlPh')}" value="${l.url || ''}"
+        oninput="LINK_STATE['${key}'][${i}].url = this.value">
+      <button type="button" class="btn small ghost" onclick="removeLinkRow('${containerId}','${key}',${i})">✕</button>
+    </div>`).join("") +
+    `<button type="button" class="btn small ghost mt-8" onclick="addLinkRow('${containerId}','${key}')">+ ${t('support.addLink')}</button>`;
+}
+
+function addLinkRow(containerId, key) {
+  LINK_STATE[key] = LINK_STATE[key] || [];
+  LINK_STATE[key].push({ name: "", url: "" });
+  renderLinkRows(containerId, key);
+}
+
+function removeLinkRow(containerId, key, i) {
+  LINK_STATE[key].splice(i, 1);
+  renderLinkRows(containerId, key);
+}
+
+async function saveLecture(id) {
+  await api("/api/courses", { method: "POST", body: {
+    action: "lecture-update", lecture_id: id,
+    name: document.getElementById(`ln_${id}`).value,
+    lecture_date: document.getElementById(`ld_${id}`).value,
+    links: linksToString(LINK_STATE[id] || []),
+    notes: document.getElementById(`lnt_${id}`).value,
+  }});
+  loadLectures(document.getElementById("courseSelect").value);
+}
+
+async function addLecture() {
+  const code = document.getElementById("courseSelect").value;
+  if (!code) return;
+  await api("/api/courses", { method: "POST", body: {
+    action: "lecture-add", course_code: code,
+    name: document.getElementById("l_name").value,
+    lecture_date: document.getElementById("l_date").value,
+    links: linksToString(LINK_STATE.new || []),
+    notes: document.getElementById("l_notes").value,
+  }});
+  document.getElementById("l_name").value = "";
+  document.getElementById("l_notes").value = "";
+  LINK_STATE.new = [];
+  renderLinkRows("l_links_rows", "new");
+  loadLectures(code);
+}
+
+(async function init() {
+  const user = await guard(["support"]);
+  if (!user) return;
+  initTabs();
+  initBiometricSettings();
+  renderLinkRows("l_links_rows", "new");
+  document.getElementById("createCourseBtn").addEventListener("click", createCourse);
+  document.getElementById("addLectureBtn").addEventListener("click", addLecture);
+  document.getElementById("courseSelect").addEventListener("change", (e) => {
+    const c = COURSES.find(c => c.course_code === e.target.value);
+    if (c) renderCourseEdit(c);
+    loadLectures(e.target.value);
+  });
+  document.addEventListener("langchange", async () => {
+    await loadCourses();
+    if (COURSES.length) loadLectures(document.getElementById("courseSelect").value || COURSES[0].course_code);
+  });
+  await loadCourses();
+  if (COURSES.length) loadLectures(COURSES[0].course_code);
+})();
+</script>
+</body>
+</html>

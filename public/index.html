@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bible Institute — Sign in</title>
+<meta name="description" content="Sign in to the Bible Institute attendance portal.">
+<link rel="icon" href="/assets/logo.png">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<main class="login-screen">
+  <div class="login-card">
+    <button class="btn-lang" style="margin-bottom:16px;" data-lang-btn>العربية</button>
+    <img class="login-logo" src="/assets/logo.png" alt="Bible Institute logo">
+    <h1 data-i18n="login.title">Bible Institute</h1>
+    <p class="sub" data-i18n="login.sub">Welcome back. Enter your user ID to continue.</p>
+    <div id="msg" class="msg error hidden" role="alert"></div>
+    <div class="field">
+      <label for="userId" class="sr-only" data-i18n="login.userIdLabel">User ID</label>
+      <input id="userId" placeholder="User ID" data-i18n-ph="login.userIdPh" autocomplete="username" autofocus>
+    </div>
+    <button class="btn primary" id="loginBtn">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
+      <span data-i18n="login.signIn">Sign in</span>
+    </button>
+    <button class="btn-biometric hidden" id="biometricBtn" type="button">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-9 9v3"/><path d="M12 3a9 9 0 0 1 9 9v3"/><path d="M12 8a4 4 0 0 0-4 4v5"/><path d="M12 8a4 4 0 0 1 4 4v2"/><path d="M12 12v6"/></svg>
+      <span data-i18n="login.biometric">Sign in with Face ID / Fingerprint</span>
+    </button>
+    <p class="login-foot" data-i18n="login.foot">Having trouble signing in? Ask your course support staff for your user ID.</p>
+  </div>
+</main>
+<script src="/js/i18n.js"></script>
+<script src="/js/app.js"></script>
+<script>
+  const ROLE_HOME = {
+    student: "/student.html",
+    dean: "/dean.html",
+    support: "/support.html",
+    attendance_control: "/attendance-control.html",
+    super_admin: "/admin.html",
+  };
+
+  const LAST_USER_KEY = "bip_last_user_id";
+
+  function goHome(user) {
+    try { localStorage.setItem(LAST_USER_KEY, user.user_id); } catch {}
+    window.location.href = ROLE_HOME[user.role] || "/";
+  }
+
+  async function doLogin() {
+    const msg = document.getElementById("msg");
+    const userId = document.getElementById("userId").value.trim();
+    if (!userId) return;
+    const btn = document.getElementById("loginBtn");
+    btn.disabled = true;
+    try {
+      const { user } = await api("/api/auth", { method: "POST", body: { action: "login", user_id: userId } });
+      goHome(user);
+    } catch (e) {
+      showMsg(msg, e.message);
+      btn.disabled = false;
+    }
+  }
+
+  async function doBiometricLogin() {
+    const msg = document.getElementById("msg");
+    const userId = document.getElementById("userId").value.trim();
+    if (!userId) { showMsg(msg, t("login.needUserId")); return; }
+    const btn = document.getElementById("biometricBtn");
+    btn.disabled = true;
+    try {
+      const { user } = await loginWithBiometric(userId);
+      goHome(user);
+    } catch (e) {
+      // NotAllowedError = user canceled the biometric prompt — stay quiet.
+      if (e.name !== "NotAllowedError") showMsg(msg, e.message || t("security.failed"));
+      btn.disabled = false;
+    }
+  }
+
+  function updateBiometricButtonVisibility() {
+    const userId = document.getElementById("userId").value.trim();
+    document.getElementById("biometricBtn").classList.toggle("hidden", !(webauthnSupported() && userId));
+  }
+
+  document.getElementById("loginBtn").addEventListener("click", doLogin);
+  document.getElementById("biometricBtn").addEventListener("click", doBiometricLogin);
+  document.getElementById("userId").addEventListener("keydown", (e) => { if (e.key === "Enter") doLogin(); });
+  document.getElementById("userId").addEventListener("input", updateBiometricButtonVisibility);
+
+  try {
+    const lastUser = localStorage.getItem(LAST_USER_KEY);
+    if (lastUser) document.getElementById("userId").value = lastUser;
+  } catch {}
+  updateBiometricButtonVisibility();
+
+  // if already logged in, skip straight to their page
+  api("/api/auth").then(({ user }) => { window.location.href = ROLE_HOME[user.role] || "/"; }).catch(() => {});
+</script>
+</body>
+</html>

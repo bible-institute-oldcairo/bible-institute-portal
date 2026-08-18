@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dean Portal — Bible Institute</title>
+<link rel="icon" href="/assets/logo.png">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<header class="topbar">
+  <div class="brand">
+    <img class="brand-logo" src="/assets/logo.png" alt="Bible Institute logo">
+    <div class="brand-text">
+      <span class="brand-name-ar">معهد الكتاب</span>
+      <span class="brand-name-en" data-i18n="brand.dean">Bible Institute · Dean</span>
+    </div>
+  </div>
+  <div class="who">
+    <span class="who-name" data-user-name>—</span>
+    <button class="btn-lang" data-lang-btn>العربية</button>
+    <button class="btn-signout" onclick="logout()">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      <span data-i18n="common.signOut">Sign out</span>
+    </button>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Dean portal sections">
+  <button data-tab="dashboard" class="active">
+    <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    <span data-i18n="nav.dashboard">Dashboard</span>
+  </button>
+  <button data-tab="excuses">
+    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg>
+    <span data-i18n="nav.excuses">Excuses</span>
+  </button>
+  <button data-tab="search">
+    <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+    <span data-i18n="nav.studentSearch">Student Search</span>
+  </button>
+</nav>
+
+<main class="wrap" id="main">
+
+  <!-- DASHBOARD -->
+  <div data-panel="dashboard" tabindex="-1">
+    <div class="grid cols-3">
+      <div class="stat">
+        <div class="stat-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div><div class="num" id="statStudents">—</div><div class="label" data-i18n="dean.enrolledStudents">Enrolled students</div></div>
+      </div>
+      <div class="stat">
+        <div class="stat-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <div><div class="num" id="statToday">—</div><div class="label" data-i18n="dean.checkedInToday">Checked in today</div></div>
+      </div>
+      <div class="stat">
+        <div class="stat-icon"><svg class="icon" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/></svg></div>
+        <div><div class="num" id="statPending">—</div><div class="label" data-i18n="dean.pendingExcuses">Pending excuses</div></div>
+      </div>
+    </div>
+    <div class="card mt-24">
+      <div class="card-head"><h2 data-i18n="dean.recentAttendance">Attendance — recent days (all students)</h2></div>
+      <div class="table-scroll">
+      <table class="stack"><thead><tr><th data-i18n="dean.student">Student</th><th data-i18n="dean.code">Code</th><th data-i18n="common.date">Date</th><th data-i18n="student.firstCheckIn">First check-in</th><th data-i18n="student.lastCheckOut">Last check-out</th></tr></thead>
+        <tbody id="dashTable"><tr><td colspan="5" data-i18n="common.loading">Loading…</td></tr></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXCUSES -->
+  <div data-panel="excuses" class="card hidden" tabindex="-1">
+    <div class="card-head"><h2 data-i18n="dean.allExcuses">All Excuses</h2></div>
+    <div class="table-scroll">
+    <table class="stack">
+      <thead><tr><th data-i18n="dean.student">Student</th><th data-i18n="student.day">Day</th><th data-i18n="student.filed">Filed</th><th data-i18n="student.lecturePick">Lecture</th><th data-i18n="student.text">Text</th><th data-i18n="dean.attachments">Attachments</th><th data-i18n="common.status">Status</th><th data-i18n="dean.decision">Decision</th></tr></thead>
+      <tbody id="excusesBody"><tr><td colspan="8" data-i18n="common.loading">Loading…</td></tr></tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- SEARCH -->
+  <div data-panel="search" class="card hidden" tabindex="-1">
+    <div class="card-head"><h2 data-i18n="dean.findStudent">Find a Student</h2></div>
+    <div class="input-row">
+      <div class="field" style="margin-bottom:0;">
+        <label for="searchCode" class="sr-only" data-i18n="dean.studentCodePh">Student code</label>
+        <input id="searchCode" placeholder="Student code" data-i18n-ph="dean.studentCodePh">
+      </div>
+      <button class="btn primary" id="searchBtn">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+        <span data-i18n="common.search">Search</span>
+      </button>
+    </div>
+    <div id="searchMsg" class="msg hidden mt-24" role="alert"></div>
+    <div id="searchResult" class="mt-24"></div>
+  </div>
+
+</main>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/app.js"></script>
+<script>
+async function loadDashboard() {
+  const { summary } = await api("/api/attendance?action=summary");
+  const students = new Set(summary.map(s => s.student_id));
+  document.getElementById("statStudents").textContent = students.size;
+  const today = new Date().toISOString().slice(0, 10);
+  document.getElementById("statToday").textContent = summary.filter(s => s.event_date === today).length;
+
+  document.getElementById("dashTable").innerHTML = summary.slice(0, 100).map(s => `
+    <tr><td data-label="${t("dean.student")}">${s.full_name}</td><td data-label="${t("dean.code")}">${s.student_code}</td><td data-label="${t("common.date")}">${s.event_date}</td>
+        <td data-label="${t("student.firstCheckIn")}">${fmtDateTime(s.first_check_in)}</td><td data-label="${t("student.lastCheckOut")}">${fmtDateTime(s.last_check_out)}</td></tr>`).join("")
+    || `<tr><td colspan="5">${emptyState(t("student.noAttendance"))}</td></tr>`;
+
+  const { excuses } = await api("/api/excuses?action=all");
+  document.getElementById("statPending").textContent = excuses.filter(e => e.status === "pending").length;
+}
+
+async function loadExcuses() {
+  const { excuses } = await api("/api/excuses?action=all");
+  document.getElementById("excusesBody").innerHTML = excuses.length ? excuses.map(e => `
+    <tr>
+      <td data-label="${t("dean.student")}">${e.full_name}<br><span class="text-muted" style="font-size:0.85rem;">${e.student_code}</span></td>
+      <td data-label="${t("student.day")}">${e.day_date}</td>
+      <td data-label="${t("student.filed")}">${fmtDateTime(e.created_at)}</td>
+      <td data-label="${t("student.lecturePick")}">${e.lecture_choice}</td>
+      <td data-label="${t("student.text")}" style="max-width:220px;">${e.excuse_text}</td>
+      <td data-label="${t("dean.attachments")}">—</td>
+      <td data-label="${t("common.status")}"><span class="pill ${e.status === 'canceled' ? 'muted' : e.status === 'decided' ? 'ok' : 'warn'}">${t("common." + e.status)}</span>
+          ${e.status === 'decided' ? `<div class="text-muted" style="font-size:0.82rem;">${e.approval_percentage}%</div>` : ""}</td>
+      <td data-label="${t("dean.decision")}">
+        ${e.status === 'pending' ? `
+          <div style="display:flex; gap:6px; align-items:center; justify-content:flex-end;">
+          <input type="number" min="0" max="100" placeholder="%" id="pct-${e.id}" style="width:70px; min-height:38px; padding:6px 8px;">
+          <button class="btn small primary" onclick="decide(${e.id})">${t("common.save")}</button>
+          </div>` : "—"}
+      </td>
+    </tr>`).join("") : `<tr><td colspan="8">${emptyState(t("student.noExcuses"))}</td></tr>`;
+}
+
+async function decide(id) {
+  const val = document.getElementById(`pct-${id}`).value;
+  if (val === "") { alert(t("dean.enterPercentage")); return; }
+  await api("/api/excuses", { method: "POST", body: { action: "decide", excuse_id: id, approval_percentage: Number(val) } });
+  loadExcuses();
+  loadDashboard();
+}
+
+async function searchStudent() {
+  const msg = document.getElementById("searchMsg");
+  const code = document.getElementById("searchCode").value.trim();
+  msg.classList.add("hidden");
+  if (!code) return;
+  try {
+    const data = await api(`/api/students?action=search&code=${encodeURIComponent(code)}`);
+    renderSearchResult(data);
+  } catch (e) {
+    document.getElementById("searchResult").innerHTML = "";
+    showMsg(msg, e.message);
+  }
+}
+
+function renderSearchResult(data) {
+  const { profile, degrees, attendance, excuses } = data;
+  document.getElementById("searchResult").innerHTML = `
+    <div class="card">
+      <h3>${t("dean.profile")}</h3>
+      <div class="grid cols-2">
+        <div class="field"><label for="e_full_name">${t("student.fullName")}</label><input id="e_full_name" value="${profile.full_name || ''}"></div>
+        <div class="field"><label for="e_email">${t("student.email")}</label><input id="e_email" value="${profile.email || ''}"></div>
+        <div class="field"><label for="e_phone">${t("student.phone")}</label><input id="e_phone" value="${profile.phone || ''}"></div>
+        <div class="field"><label for="e_level">${t("student.level")}</label><input id="e_level" value="${profile.level || ''}"></div>
+        <div class="field"><label for="e_program">${t("student.program")}</label><input id="e_program" value="${profile.program || ''}"></div>
+        <div class="field"><label for="e_card_number">${t("dean.cardNumber")}</label><input id="e_card_number" value="${profile.card_number || ''}"></div>
+      </div>
+      <button class="btn primary" onclick="saveProfile('${profile.user_id}')">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>
+        ${t("dean.saveChanges")}
+      </button>
+    </div>
+    <div class="card">
+      <h3>${t("dean.courseDegrees")}</h3>
+      <div class="table-scroll">
+      <table><thead><tr><th>${t("dean.course")}</th><th>${t("dean.degree")}</th></tr></thead>
+        <tbody>${degrees.map(d => `<tr><td>${d.course_name}</td><td>${d.degree}</td></tr>`).join("") || `<tr><td colspan="2">${t("common.none")}</td></tr>`}</tbody></table>
+      </div>
+    </div>
+    <div class="card">
+      <h3>${t("dean.attendanceCard")}</h3>
+      <div class="table-scroll">
+      <table><thead><tr><th>${t("common.date")}</th><th>${t("student.firstCheckIn")}</th><th>${t("student.lastCheckOut")}</th></tr></thead>
+        <tbody>${attendance.map(a => `<tr><td>${a.event_date}</td><td>${fmtDateTime(a.first_check_in)}</td><td>${fmtDateTime(a.last_check_out)}</td></tr>`).join("") || `<tr><td colspan="3">${t("common.none")}</td></tr>`}</tbody></table>
+      </div>
+    </div>
+    <div class="card">
+      <h3>${t("dean.excusesCard")}</h3>
+      <div class="table-scroll">
+      <table><thead><tr><th>${t("student.day")}</th><th>${t("student.lecturePick")}</th><th>${t("common.status")}</th></tr></thead>
+        <tbody>${excuses.map(e => `<tr><td>${e.day_date}</td><td>${e.lecture_choice}</td><td>${t("common." + e.status)}</td></tr>`).join("") || `<tr><td colspan="3">${t("common.none")}</td></tr>`}</tbody></table>
+      </div>
+    </div>`;
+}
+
+async function saveProfile(studentId) {
+  await api("/api/students", { method: "POST", body: {
+    action: "update", student_id: studentId,
+    full_name: document.getElementById("e_full_name").value,
+    email: document.getElementById("e_email").value,
+    phone: document.getElementById("e_phone").value,
+    level: document.getElementById("e_level").value,
+    program: document.getElementById("e_program").value,
+    card_number: document.getElementById("e_card_number").value,
+  }});
+  alert(t("common.saved"));
+}
+
+(async function init() {
+  const user = await guard(["dean"]);
+  if (!user) return;
+  initTabs();
+  document.getElementById("searchBtn").addEventListener("click", searchStudent);
+  document.getElementById("searchCode").addEventListener("keydown", e => { if (e.key === "Enter") searchStudent(); });
+  document.addEventListener("langchange", () => { loadDashboard(); loadExcuses(); });
+  await loadDashboard();
+  await loadExcuses();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance Control — Bible Institute</title>
+<link rel="icon" href="/assets/logo.png">
+<link rel="stylesheet" href="/css/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qr-scanner/1.4.2/qr-scanner.umd.min.js"></script>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<header class="topbar">
+  <div class="brand">
+    <img class="brand-logo" src="/assets/logo.png" alt="Bible Institute logo">
+    <div class="brand-text">
+      <span class="brand-name-ar">معهد الكتاب</span>
+      <span class="brand-name-en" data-i18n="brand.attendance">Bible Institute · Attendance Control</span>
+    </div>
+  </div>
+  <div class="who">
+    <span class="who-name" data-user-name>—</span>
+    <button class="btn-lang" data-lang-btn>العربية</button>
+    <button class="btn-signout" onclick="logout()">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      <span data-i18n="common.signOut">Sign out</span>
+    </button>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Attendance control sections">
+  <button data-tab="manual" class="active">
+    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+    <span data-i18n="att.tabManual">Log &amp; Look Up</span>
+  </button>
+  <button data-tab="all">
+    <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="1"/><rect x="14" y="4" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    <span data-i18n="att.tabAllStudents">All Students</span>
+  </button>
+</nav>
+
+<main class="wrap" id="main">
+  <div class="page-heading">
+    <h1 data-i18n="att.pageTitle">Attendance Control</h1>
+    <p data-i18n="att.pageSub">Manually log attendance for students who can't check in themselves, or look up their history.</p>
+  </div>
+
+  <!-- SIGN-IN SECURITY (biometric login) -->
+  <div class="card" id="webauthnCard">
+    <div class="card-head">
+      <h2>
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-9 9v3"/><path d="M12 3a9 9 0 0 1 9 9v3"/><path d="M12 8a4 4 0 0 0-4 4v5"/><path d="M12 8a4 4 0 0 1 4 4v2"/><path d="M12 12v6"/></svg>
+        <span data-i18n="security.title">Sign-in Security</span>
+      </h2>
+    </div>
+    <p class="hint" data-i18n="security.desc">Add Face ID, Fingerprint, or Windows Hello on this device to sign in without typing your ID next time.</p>
+    <div id="webauthnMsg" class="msg hidden"></div>
+    <div id="webauthnList"></div>
+    <button class="btn" id="webauthnAddBtn" data-i18n="security.add">+ Add this device</button>
+  </div>
+
+  <div data-panel="manual" tabindex="-1">
+  <div class="card">
+    <div class="card-head">
+      <h2>
+        <svg class="icon" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+        <span data-i18n="att.logManual">Log Manual Attendance</span>
+      </h2>
+    </div>
+    <p class="hint" data-i18n="att.logHint">For students who can't check in themselves (device issue, connectivity, etc).</p>
+    <div id="msg" class="msg hidden" role="alert"></div>
+    <div class="input-row">
+      <div class="field" style="margin-bottom:0;">
+        <label for="studentCode" class="sr-only" data-i18n="att.studentCodePh">Student code</label>
+        <input id="studentCode" placeholder="Student ID" data-i18n-ph="att.studentCodePh">
+      </div>
+      <button class="btn primary" id="logBtn">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+        <span data-i18n="att.logAttendance">Log attendance</span>
+      </button>
+      <button class="btn ghost" id="scanBtn">
+        <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M20 14v3h-3M14 21h3M21 17v4"/></svg>
+        <span data-i18n="att.scanQr">Scan QR</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <h2>
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+        <span data-i18n="att.lookup">Look Up a Student's Attendance</span>
+      </h2>
+    </div>
+    <div class="input-row">
+      <div class="field" style="margin-bottom:0;">
+        <label for="searchCode" class="sr-only" data-i18n="att.searchCodePh">Student code</label>
+        <input id="searchCode" placeholder="Student ID" data-i18n-ph="att.searchCodePh">
+      </div>
+      <button class="btn ghost" id="searchBtn">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+        <span data-i18n="common.search">Search</span>
+      </button>
+    </div>
+    <div class="table-scroll mt-24">
+      <table class="stack">
+        <thead><tr><th data-i18n="common.date">Date</th><th data-i18n="student.firstCheckIn">First check-in</th><th data-i18n="student.lastCheckOut">Last check-out</th></tr></thead>
+        <tbody id="resultBody"><tr><td colspan="3" class="text-muted" data-i18n="att.searchPrompt">Search for a student to see their attendance.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+  </div>
+
+  <div data-panel="all" class="card hidden" tabindex="-1">
+    <div class="card-head">
+      <h2>
+        <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="1"/><rect x="14" y="4" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span data-i18n="att.tabAllStudents">All Students</span>
+      </h2>
+    </div>
+    <p class="hint" data-i18n="att.allStudentsHint">Tap a student's card to open their attendance log and record a check-in for them.</p>
+    <div class="input-row">
+      <div class="field" style="margin-bottom:0;">
+        <label for="nameFilter" class="sr-only" data-i18n="att.filterNamePh">Filter by name</label>
+        <input id="nameFilter" data-i18n-ph="att.filterNamePh" placeholder="Filter by name or ID">
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label for="levelFilter" class="sr-only" data-i18n="att.filterLevelPh">Filter by level</label>
+        <select id="levelFilter"><option value="" data-i18n="att.allLevels">All levels</option></select>
+      </div>
+    </div>
+    <div id="studentGrid" class="student-grid mt-24"></div>
+  </div>
+</main>
+
+<!-- QR SCAN MODAL -->
+<div id="qrModal" class="qr-modal-backdrop hidden">
+  <div class="qr-modal">
+    <h3 data-i18n="att.scanTitle">Scan Student QR</h3>
+    <video id="qrVideo" muted playsinline></video>
+    <div class="qr-status" id="qrStatus" data-i18n="att.scanHint">Point the camera at the student's card.</div>
+    <div class="qr-actions">
+      <button class="btn ghost" id="qrCancelBtn" data-i18n="student.cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/app.js"></script>
+<script>
+async function logAttendance() {
+  const msg = document.getElementById("msg");
+  msg.classList.add("hidden");
+  const code = document.getElementById("studentCode").value.trim();
+  if (!code) return;
+  try {
+    const device_info = JSON.stringify(await collectDeviceInfo());
+    await api("/api/attendance", { method: "POST", body: { action: "manual", student_id: code, device_info } });
+    showMsg(msg, t("att.recordedFor", { code }), "success");
+    document.getElementById("studentCode").value = "";
+  } catch (e) { showMsg(msg, e.message); }
+}
+
+let qrScanner = null;
+
+async function openScanner() {
+  const modal = document.getElementById("qrModal");
+  const statusEl = document.getElementById("qrStatus");
+  if (typeof QrScanner === "undefined") {
+    showMsg(document.getElementById("msg"), t("att.scanUnsupported"));
+    return;
+  }
+  modal.classList.remove("hidden");
+  statusEl.textContent = t("att.scanHint");
+  const video = document.getElementById("qrVideo");
+  QrScanner.WORKER_PATH = "https://cdnjs.cloudflare.com/ajax/libs/qr-scanner/1.4.2/qr-scanner-worker.min.js";
+  qrScanner = new QrScanner(video, (result) => onScanSuccess(result), {
+    highlightScanRegion: true,
+    highlightCodeOutline: true,
+    preferredCamera: "environment",
+  });
+  try {
+    await qrScanner.start();
+  } catch (e) {
+    statusEl.textContent = t("att.scanCameraError");
+  }
+}
+
+function closeScanner() {
+  document.getElementById("qrModal").classList.add("hidden");
+  if (qrScanner) {
+    qrScanner.stop();
+    qrScanner.destroy();
+    qrScanner = null;
+  }
+}
+
+async function onScanSuccess(result) {
+  const code = (result && result.data ? result.data : String(result)).trim();
+  if (!code) return;
+  document.getElementById("qrStatus").textContent = t("att.recordedFor", { code });
+  closeScanner();
+  document.getElementById("studentCode").value = code;
+  await logAttendance();
+}
+
+async function searchAttendance() {
+  const code = document.getElementById("searchCode").value.trim();
+  if (!code) return;
+  try {
+    const data = await api(`/api/students?action=search&code=${encodeURIComponent(code)}`);
+    document.getElementById("resultBody").innerHTML = data.attendance.length
+      ? data.attendance.map(a => `<tr><td data-label="${t("common.date")}">${a.event_date}</td><td data-label="${t("student.firstCheckIn")}">${fmtDateTime(a.first_check_in)}</td><td data-label="${t("student.lastCheckOut")}">${fmtDateTime(a.last_check_out)}</td></tr>`).join("")
+      : `<tr><td colspan="3">${emptyState(t("att.noneFound"))}</td></tr>`;
+  } catch (e) { alert(e.message); }
+}
+
+// --- All Students tab ---
+let ALL_STUDENTS = [];
+
+function initials(name) {
+  if (!name) return "?";
+  return name.trim().split(/\s+/).slice(0, 2).map(w => w[0]).join("").toUpperCase();
+}
+
+async function loadAllStudents() {
+  const box = document.getElementById("studentGrid");
+  box.innerHTML = t("common.loading");
+  try {
+    const { students } = await api("/api/students?action=list");
+    ALL_STUDENTS = students;
+    const levels = [...new Set(students.map(s => s.level).filter(Boolean))].sort();
+    document.getElementById("levelFilter").innerHTML =
+      `<option value="">${t("att.allLevels")}</option>` + levels.map(l => `<option value="${l}">${l}</option>`).join("");
+    renderStudentGrid();
+  } catch (e) {
+    box.innerHTML = "";
+    alert(e.message);
+  }
+}
+
+function renderStudentGrid() {
+  const nameQ = document.getElementById("nameFilter").value.trim().toLowerCase();
+  const level = document.getElementById("levelFilter").value;
+  const filtered = ALL_STUDENTS.filter(s =>
+    (!level || s.level === level) &&
+    (!nameQ || (s.full_name || "").toLowerCase().includes(nameQ) || s.user_id.toLowerCase().includes(nameQ))
+  );
+  const box = document.getElementById("studentGrid");
+  box.innerHTML = filtered.length ? filtered.map(s => `
+    <button type="button" class="student-chip" onclick="openStudentLog('${s.user_id}')">
+      <div class="sc-avatar">${s.photo_url ? `<img src="${s.photo_url}" alt="">` : initials(s.full_name)}</div>
+      <div class="sc-name">${s.full_name || s.user_id}</div>
+      <div class="sc-meta">${s.level || ""}${s.card_number ? " · " + s.card_number : ""}</div>
+    </button>`).join("") : `<div class="empty-state" style="grid-column:1/-1;"><p>${t("att.noStudentsFound")}</p></div>`;
+}
+
+function openStudentLog(userId) {
+  document.querySelector('[data-tab="manual"]').click();
+  document.getElementById("studentCode").value = userId;
+  document.getElementById("searchCode").value = userId;
+  searchAttendance();
+  document.getElementById("studentCode").focus();
+}
+
+(async function init() {
+  const user = await guard(["attendance_control"]);
+  if (!user) return;
+  initTabs();
+  initBiometricSettings();
+  document.getElementById("logBtn").addEventListener("click", logAttendance);
+  document.getElementById("scanBtn").addEventListener("click", openScanner);
+  document.getElementById("qrCancelBtn").addEventListener("click", closeScanner);
+  document.getElementById("searchBtn").addEventListener("click", searchAttendance);
+  document.getElementById("studentCode").addEventListener("keydown", e => { if (e.key === "Enter") logAttendance(); });
+  document.getElementById("searchCode").addEventListener("keydown", e => { if (e.key === "Enter") searchAttendance(); });
+  document.getElementById("nameFilter").addEventListener("input", renderStudentGrid);
+  document.getElementById("levelFilter").addEventListener("change", renderStudentGrid);
+  document.querySelector('[data-tab="all"]').addEventListener("click", () => {
+    if (!ALL_STUDENTS.length) loadAllStudents();
+  }, { once: true });
+  document.addEventListener("langchange", () => {
+    const code = document.getElementById("searchCode").value.trim();
+    if (code) searchAttendance();
+    if (ALL_STUDENTS.length) renderStudentGrid();
+  });
+})();
+</script>
+</body>
+</html>

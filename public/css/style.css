@@ -1,0 +1,676 @@
+/* ==========================================================================
+   Bible Institute — Attendance Portal
+   Design system — colors extracted from the official logo:
+     navy  #243461  (cross / book spine)
+     mint  #89D2B7  (open page)
+   Built for readability first: large type, high contrast, big touch targets.
+   ========================================================================== */
+
+:root {
+  /* --- Brand --- */
+  --navy-900: #182540;
+  --navy-800: #243461;   /* primary brand color, from logo */
+  --navy-700: #32447a;
+  --navy-600: #435795;
+  --navy-100: #e8ebf3;
+  --navy-50:  #f2f4f9;
+
+  --mint-600: #4fae8c;
+  --mint-500: #89d2b7;   /* accent color, from logo */
+  --mint-300: #b7e3d1;
+  --mint-100: #e6f6ef;
+  --mint-text: #145f48;  /* accessible dark mint for text/icons on white, 7.6:1 */
+
+  /* --- Semantic --- */
+  --success: #145f48;
+  --success-bg: #e6f6ef;
+  --warn: #92400e;
+  --warn-bg: #fdf1e0;
+  --danger: #b42318;
+  --danger-bg: #fbe9e7;
+
+  /* --- Neutrals --- */
+  --ink: #182335;
+  --muted: #5b6472;
+  --border: #e1e5ec;
+  --border-strong: #c7cddb;
+  --bg: #f7f8fb;
+  --card: #ffffff;
+
+  /* --- Shape & elevation --- */
+  --radius-sm: 10px;
+  --radius: 16px;
+  --radius-lg: 24px;
+  --shadow-sm: 0 1px 3px rgba(24, 37, 64, 0.08);
+  --shadow-md: 0 8px 24px rgba(24, 37, 64, 0.10);
+  --shadow-lg: 0 20px 50px rgba(24, 37, 64, 0.18);
+
+  /* --- Type --- */
+  font-family: "Segoe UI", "Inter", system-ui, -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+  font-size: 17px;
+}
+
+/* ==========================================================================
+   Reset / base
+   ========================================================================== */
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 { line-height: 1.25; color: var(--navy-900); font-weight: 700; }
+h1 { font-size: 1.9rem; }
+h2 { font-size: 1.35rem; margin: 0 0 6px; }
+h3 { font-size: 1.02rem; margin: 0 0 10px; }
+p { margin: 0 0 12px; }
+
+a { color: var(--navy-700); text-decoration: underline; text-underline-offset: 2px; }
+a:hover { color: var(--navy-900); }
+
+/* Visible, high-contrast focus ring everywhere — required for keyboard & low-vision users */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--mint-600);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Skip link for keyboard/screen-reader users */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--navy-900);
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 0 0 8px 0;
+  z-index: 1000;
+  font-weight: 600;
+}
+.skip-link:focus { left: 0; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+.icon { width: 20px; height: 20px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -4px; }
+.icon-sm { width: 16px; height: 16px; vertical-align: -2px; }
+.icon-lg { width: 28px; height: 28px; }
+
+/* ==========================================================================
+   Header / brand bar
+   ========================================================================== */
+.topbar {
+  background: var(--navy-800);
+  background-image: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-900) 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  box-shadow: var(--shadow-md);
+}
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.brand-logo {
+  height: 44px; width: 44px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 4px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.brand-text { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
+.brand-name-ar { font-size: 1.05rem; font-weight: 700; }
+.brand-name-en { font-size: 0.8rem; color: var(--mint-500); font-weight: 600; letter-spacing: 0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.who { display: flex; align-items: center; gap: 14px; font-size: 0.95rem; flex-shrink: 0; }
+.who-name { font-weight: 600; display: none; }
+@media (min-width: 560px) { .who-name { display: inline; } }
+
+.topbar button.btn-signout {
+  background: rgba(255,255,255,0.10);
+  border: 1.5px solid rgba(255,255,255,0.35);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.92rem;
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 44px;
+}
+.topbar button.btn-signout:hover { background: rgba(255,255,255,0.2); }
+
+/* ==========================================================================
+   Section navigation ("tabs") — large pill nav, works for touch & keyboard
+   ========================================================================== */
+.tabs {
+  display: flex;
+  gap: 6px;
+  background: var(--navy-900);
+  padding: 10px 16px;
+  overflow-x: auto;
+  position: sticky;
+  top: 72px;
+  z-index: 30;
+  scrollbar-width: thin;
+}
+.tabs button {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.72);
+  padding: 12px 18px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  white-space: nowrap;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 46px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.tabs button:hover { background: rgba(255,255,255,0.10); color: #fff; }
+.tabs button.active {
+  color: var(--navy-900);
+  background: var(--mint-500);
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   Layout
+   ========================================================================== */
+.wrap { max-width: 1080px; margin: 0 auto; padding: 28px 20px 64px; }
+
+.page-heading { margin-bottom: 20px; }
+.page-heading p { color: var(--muted); font-size: 1.02rem; margin: 4px 0 0; }
+
+/* ==========================================================================
+   Cards
+   ========================================================================== */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+}
+.card-head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+  margin-bottom: 14px;
+}
+.card-head h2 { display: flex; align-items: center; gap: 10px; }
+.card-head h2 .icon { color: var(--navy-700); }
+.card > p.hint { color: var(--muted); margin-top: -4px; }
+
+.card h3 { font-size: 0.82rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
+
+.subcard {
+  background: var(--navy-50);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.subcard-alt { background: var(--mint-100); }
+
+.grid { display: grid; gap: 18px; }
+.grid.cols-2 { grid-template-columns: 1fr 1fr; }
+.grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 760px) { .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; } }
+
+/* Stat cards for dashboards */
+.stat {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow-sm);
+}
+.stat .stat-icon {
+  width: 52px; height: 52px; border-radius: 14px;
+  background: var(--mint-100); color: var(--mint-text);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.stat .num { font-size: 1.9rem; font-weight: 800; color: var(--navy-900); line-height: 1; }
+.stat .label { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+
+/* Data field display (read-only profile rows) */
+.data-row { margin-bottom: 4px; }
+.data-row label { margin-bottom: 2px; }
+.data-row .value { font-size: 1.08rem; font-weight: 600; color: var(--navy-900); }
+
+/* ==========================================================================
+   Tables — desktop table, becomes a stacked card list on small screens
+   when rows include data-label attributes on each cell
+   ========================================================================== */
+.table-scroll { overflow-x: auto; border-radius: var(--radius); }
+table { width: 100%; border-collapse: collapse; font-size: 0.98rem; }
+th, td { text-align: left; padding: 13px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+th {
+  color: var(--navy-900);
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--navy-50);
+  position: sticky; top: 0;
+}
+tbody tr:hover td { background: var(--mint-100); }
+tbody tr:nth-child(even) td { background: rgba(24,37,64,0.015); }
+tbody tr:nth-child(even):hover td { background: var(--mint-100); }
+
+@media (max-width: 700px) {
+  table.stack thead { display: none; }
+  table.stack, table.stack tbody, table.stack tr, table.stack td { display: block; width: 100%; }
+  table.stack tr {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 14px;
+    padding: 6px 4px;
+    box-shadow: var(--shadow-sm);
+  }
+  table.stack tr:nth-child(even) td { background: transparent; }
+  table.stack td {
+    border-bottom: none;
+    padding: 8px 14px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    text-align: right;
+  }
+  table.stack td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: var(--muted);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-align: left;
+  }
+  table.stack td:empty::before { content: none; }
+
+  table.stack td.multiline {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    text-align: left;
+  }
+  table.stack td.multiline::before { text-align: left; }
+  table.stack td.multiline a { display: block; padding: 2px 0; }
+}
+
+/* ==========================================================================
+   Expand/collapse toggle buttons (courses, lectures)
+   ========================================================================== */
+.icon-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; padding: 0; flex-shrink: 0;
+  border: 1.5px solid var(--border-strong); border-radius: 50%;
+  background: var(--card); color: var(--navy-800); cursor: pointer;
+}
+.icon-btn:hover { background: var(--navy-50); }
+.icon-btn .icon { width: 18px; height: 18px; margin: 0; vertical-align: 0; transition: transform 0.2s ease; }
+.icon-btn[aria-expanded="false"] .icon { transform: rotate(-90deg); }
+.lecture-name-cell { display: flex; align-items: center; gap: 10px; }
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 36px 20px;
+  color: var(--muted);
+}
+.empty-state .icon-lg { color: var(--border-strong); margin-bottom: 10px; }
+.empty-state p { margin: 0; font-size: 1rem; }
+
+/* ==========================================================================
+   Forms
+   ========================================================================== */
+input, select, textarea {
+  font: inherit;
+  font-size: 1rem;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--ink);
+  min-height: 48px;
+  width: 100%;
+}
+textarea { min-height: 96px; resize: vertical; }
+input:focus, select:focus, textarea:focus { border-color: var(--navy-600); }
+input::placeholder, textarea::placeholder { color: #97a0b0; }
+
+label { font-size: 0.92rem; color: var(--navy-900); font-weight: 600; display: block; margin-bottom: 6px; }
+.field { margin-bottom: 16px; }
+.field .help { font-size: 0.85rem; color: var(--muted); margin-top: 5px; }
+
+.checkbox-row { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--ink); cursor: pointer; }
+.checkbox-row input[type="checkbox"] { width: 22px; height: 22px; min-height: 22px; accent-color: var(--navy-700); flex-shrink: 0; }
+
+.input-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+.input-row > * { flex: 1 1 220px; }
+.input-row > button.btn { flex: 0 0 auto; }
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+button.btn {
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 13px 22px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.05s ease, background 0.15s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+}
+button.btn:active { transform: translateY(1px); }
+
+button.btn.primary, button.btn.gold /* legacy class kept working */ {
+  background: var(--navy-800);
+  color: #fff;
+  border-color: var(--navy-800);
+  box-shadow: var(--shadow-sm);
+}
+button.btn.primary:hover, button.btn.gold:hover { background: var(--navy-700); border-color: var(--navy-700); }
+
+button.btn.accent {
+  background: var(--mint-500);
+  color: var(--navy-900);
+  border-color: var(--mint-500);
+}
+button.btn.accent:hover { background: var(--mint-600); color: #fff; border-color: var(--mint-600); }
+
+a.btn { text-decoration: none; }
+
+button.btn:disabled, a.btn.disabled { background: #cdd2dd; border-color: #cdd2dd; color: #6b7280; cursor: not-allowed; box-shadow: none; }
+
+button.btn.ghost { background: transparent; color: var(--navy-800); border-color: var(--border-strong); }
+button.btn.ghost:hover { background: var(--navy-50); }
+
+button.btn.danger { background: #fff; color: var(--danger); border-color: var(--danger); }
+button.btn.danger:hover { background: var(--danger-bg); }
+
+button.btn.small { padding: 8px 14px; font-size: 0.88rem; min-height: 38px; }
+button.btn.block { width: 100%; }
+
+/* ==========================================================================
+   Pills / badges
+   ========================================================================== */
+.pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.pill.ok { background: var(--success-bg); color: var(--success); }
+.pill.warn { background: var(--warn-bg); color: var(--warn); }
+.pill.danger { background: var(--danger-bg); color: var(--danger); }
+.pill.muted { background: var(--navy-100); color: var(--muted); }
+
+/* ==========================================================================
+   Alerts / messages (kept as .msg for JS compatibility)
+   ========================================================================== */
+.msg {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 13px 16px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 16px;
+  font-size: 0.98rem;
+  font-weight: 600;
+  border: 1.5px solid transparent;
+}
+.msg.error { background: var(--danger-bg); color: var(--danger); border-color: #f2c6c1; }
+.msg.success { background: var(--success-bg); color: var(--success); border-color: #bfe6d7; }
+
+.hidden { display: none !important; }
+
+/* ==========================================================================
+   Login screen
+   ========================================================================== */
+.login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--navy-900);
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(137,210,183,0.20) 0%, transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(137,210,183,0.16) 0%, transparent 45%),
+    linear-gradient(160deg, var(--navy-800) 0%, var(--navy-900) 65%);
+  padding: 24px;
+}
+.login-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  padding: 44px 36px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+.login-card .login-logo { height: 92px; width: 92px; object-fit: contain; margin: 0 auto 18px; display: block; }
+.login-card h1 { font-size: 1.5rem; margin: 0 0 4px; color: var(--navy-900); }
+.login-card p.sub { color: var(--muted); margin: 0 0 26px; font-size: 0.98rem; }
+.login-card .field { text-align: left; }
+.login-card input { text-align: center; font-size: 1.1rem; letter-spacing: 0.02em; }
+.login-card button.btn { width: 100%; padding: 14px; font-size: 1.05rem; margin-top: 4px; }
+.login-foot { margin-top: 22px; font-size: 0.82rem; color: var(--muted); }
+
+/* ==========================================================================
+   Academy / student card (with QR) — vertical badge style
+   ========================================================================== */
+.card-visual-outer {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  border-radius: 30px;
+  padding: 12px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--mint-500) 0%, var(--mint-500) 34%, var(--navy-700) 35%, var(--navy-800) 100%);
+  box-shadow: var(--shadow-md);
+}
+.card-visual-outer::after {
+  content: "";
+  position: absolute; right: -36px; bottom: -46px;
+  width: 150px; height: 150px; border-radius: 50%;
+  background: rgba(137,210,183,0.28);
+}
+.card-visual {
+  background: #fff;
+  border-radius: 22px;
+  padding: 30px 20px 22px;
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+}
+.card-visual .cv-logo { width: 108px; height: 108px; object-fit: contain; margin-bottom: 6px; }
+.card-visual .cv-name { font-size: 1.35rem; font-weight: 800; color: var(--navy-800); margin-top: 16px; line-height: 1.3; }
+.card-visual .cv-meta { font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+.card-visual .cv-code { font-size: clamp(1.05rem, 5.5vw, 1.6rem); font-weight: 800; color: var(--navy-800); letter-spacing: 1px; margin-top: 16px; font-family: monospace; word-break: break-all; max-width: 100%; }
+.card-visual .cv-qr-wrap {
+  margin: 22px auto 6px; width: 150px; height: 150px;
+  display: flex; align-items: center; justify-content: center;
+}
+.card-visual .cv-qr-wrap canvas, .card-visual .cv-qr-wrap img { display: block; width: 100% !important; height: 100% !important; }
+.card-visual .cv-year {
+  margin-top: 18px; padding-top: 14px; width: 100%;
+  border-top: 2px dashed var(--border);
+  font-size: 1.15rem; font-weight: 800; color: var(--navy-800);
+}
+
+.geo-status { font-size: 0.92rem; margin-top: 10px; color: var(--muted); font-weight: 600; }
+
+/* ==========================================================================
+   All-students card grid (attendance control)
+   ========================================================================== */
+.student-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 14px;
+}
+.student-chip {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 16px 10px; text-align: center; cursor: pointer;
+  transition: box-shadow 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+}
+.student-chip:hover, .student-chip:focus-visible { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: var(--mint-500); outline: none; }
+.student-chip .sc-avatar {
+  width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 10px;
+  background: var(--navy-100); color: var(--navy-800); font-weight: 800; font-size: 1.05rem;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.student-chip .sc-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.student-chip .sc-name { font-weight: 700; color: var(--navy-800); font-size: 0.92rem; line-height: 1.3; }
+.student-chip .sc-meta { font-size: 0.76rem; color: var(--muted); margin-top: 3px; }
+
+/* ==========================================================================
+   QR scan modal (attendance control)
+   ========================================================================== */
+.qr-modal-backdrop {
+  position: fixed; inset: 0; background: rgba(10,16,32,0.72);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; padding: 20px;
+}
+.qr-modal {
+  background: #fff; border-radius: var(--radius-lg); padding: 20px;
+  width: 100%; max-width: 380px; box-shadow: var(--shadow-md);
+  text-align: center;
+}
+.qr-modal h3 { margin: 0 0 12px; color: var(--navy-900); }
+.qr-modal video {
+  width: 100%; border-radius: 12px; background: #000;
+  aspect-ratio: 1 / 1; object-fit: cover;
+}
+.qr-modal .qr-status { margin-top: 12px; font-size: 0.9rem; color: var(--muted); min-height: 1.3em; }
+.qr-modal .qr-actions { margin-top: 14px; display: flex; justify-content: center; gap: 10px; }
+
+/* ==========================================================================
+   Misc utility
+   ========================================================================== */
+.flex { display: flex; }
+.flex-wrap { flex-wrap: wrap; }
+.gap-10 { gap: 10px; }
+.mt-24 { margin-top: 24px; }
+.text-muted { color: var(--muted); }
+.text-center { text-align: center; }
+
+hr.sep { border: none; border-top: 1px solid var(--border); margin: 22px 0; }
+
+@media (max-width: 700px) {
+  .wrap { padding: 20px 14px 48px; }
+  .card { padding: 18px; }
+  .tabs { top: 68px; }
+}
+
+/* ==========================================================================
+   Language toggle button (topbar)
+   ========================================================================== */
+.btn-lang {
+  background: rgba(255,255,255,0.10);
+  border: 1.5px solid rgba(255,255,255,0.35);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.85rem;
+  min-height: 44px;
+}
+.btn-lang:hover { background: rgba(255,255,255,0.2); }
+
+/* ==========================================================================
+   RTL (Arabic) support — flexbox direction flips automatically with
+   `direction: rtl`; these rules correct the few properties that don't.
+   ========================================================================== */
+[dir="rtl"] { direction: rtl; }
+[dir="rtl"] th, [dir="rtl"] td { text-align: right; }
+[dir="rtl"] table.stack td { text-align: left; }
+[dir="rtl"] table.stack td::before { text-align: right; }
+[dir="rtl"] .login-card, [dir="rtl"] .login-card .field { text-align: center; }
+[dir="rtl"] .skip-link { left: auto; right: -9999px; }
+[dir="rtl"] .skip-link:focus { left: auto; right: 0; }
+
+/* ==========================================================================
+   Biometric login (WebAuthn) — settings card + login-page button
+   ========================================================================== */
+.webauthn-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.95rem;
+}
+.webauthn-item:last-child { border-bottom: none; }
+.webauthn-item small { color: var(--muted); margin-inline-start: 8px; }
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--danger, #c0392b);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 8px;
+  min-height: 32px;
+}
+.btn-link:hover { text-decoration: underline; }
+.btn-link:disabled { opacity: 0.5; cursor: default; }
+
+.btn-biometric {
+  width: 100%;
+  margin-top: 10px;
+  background: var(--mint-100, #e9f7f0);
+  border: 1.5px solid var(--mint, #89D2B7);
+  color: var(--navy, #243461);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+}
+.btn-biometric:hover { background: var(--mint, #89D2B7); }
+.btn-biometric.hidden { display: none; }
